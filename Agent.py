@@ -23,7 +23,9 @@ class Agent():
 		return true if both the current object 
 		and this one are of the same group.
 		"""
-		pass
+		if other is None:
+			return False
+		return self.group == other.group
 
 	def is_satisfied(self, agent_list):
 		"""
@@ -34,5 +36,9 @@ class Agent():
 		Be advised!  There will be elements in this list that
 		are None type.
 		"""
-		pass
+		neighbors = [a for a in agent_list if a is not None]
+		if not neighbors:
+			return True
+		same = sum(1 for a in neighbors if self.compare(a))
+		return (same / len(neighbors)) >= self.threshold
 
