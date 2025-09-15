@@ -1,3 +1,5 @@
+# nothing is different from Agent_og
+
 import random
 
 class Agent():

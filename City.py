@@ -70,7 +70,7 @@ class City:
             return
         
         # Score each empty cell by how many same-group neighbors it has
-        best score = -1
+        best_score = -1
         best_spots = []
         for r, c in empties:
             neighbors = self.get_neighbors(c,r)
@@ -101,11 +101,34 @@ class City:
                         neighbors = self.get_neighbors(c, r)
                         if not agent.is_satisfied(neighbors):
                             unsatisfied.append((c, r))
-
+            # If no unsatisfied agents → stabilized
+            if not unsatisfied:
+                return round_num + 1  # stabilized at this round
+            
             # move unsatisfied agents
             for (x, y) in unsatisfied:
                 self.move_agent(x, y)
+        
+        return None # never stabilized within given rounds
 
-            print(f"--- Round {round_num+1} ---")
-            print(self)
-            print()
+import statistics
+
+def run_experiments(num_trials=1000):
+    stabilized_rounds = []
+    for i in range(num_trials):
+        city = City(5, 5, 100)  # your City class
+        result = city.simulate()
+        if result is not None:
+            stabilized_rounds.append(result)
+    
+    frequency = len(stabilized_rounds) / num_trials
+    avg_round = statistics.mean(stabilized_rounds) if stabilized_rounds else None
+    return frequency, avg_round
+
+if __name__=="__main__":
+    freq, avg = run_experiments()
+    print(f"Stabilized in {freq*100:.2f}% of simulations.")
+    if avg is not None:
+        print(f"Average stabilization round: {avg:.2f}")
+    else:
+        print("No runs stabilized.")
