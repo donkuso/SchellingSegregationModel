@@ -59,15 +59,34 @@ class City:
 
     def move_agent(self, x, y):
         """Move agent at (x,y) to a random empty cell in the grid."""
-        agent = self.grid[y][x]
+        agent = self.grid[y][x] # col= x, row= y
         if agent is None:
             return  
+        # Finds all empty cells
         empties = [(r, c) for r in range(self.height) 
                           for c in range(self.width) 
                           if self.grid[r][c] is None]
         if not empties:
-            return  
-        new_r, new_c = random.choice(empties)
+            return
+        
+        # Score each empty cell by how many same-group neighbors it has
+        best score = -1
+        best_spots = []
+        for r, c in empties:
+            neighbors = self.get_neighbors(c,r)
+            same_group = [n for n in neighbors if n and n.compare(agent)]
+            score = len(same_group) / max(1, len([n for n in neighbors if n]))
+
+            if score > best_score:
+                best_score = score
+                best_spots = [(r,c)]
+            elif score == best_score:
+                best_spots.append((r,c))
+
+        # Picks one of the best spots randomly
+        new_r, new_c = random.choice(best_spots)
+
+        # move agent
         self.grid[new_r][new_c] = agent
         self.grid[y][x] = None
 
